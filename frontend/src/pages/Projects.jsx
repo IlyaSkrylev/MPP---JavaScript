@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import ProjectList from '../components/ProjectList';
 import TaskCard from '../components/TaskCard';
+import TaskForm from '../components/TaskForm';
 import {generateId} from '../utils/generateId'
 
 export default function Projects() {
@@ -45,28 +46,9 @@ export default function Projects() {
     )));
   };
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [assignee, setAssignee] = useState('');
-  const [status, setStatus] = useState(columns[0]);
-
-  const handleSubmit = e => {
-    e.preventDefault();
+  const handleCreateTask = payload => {
     if (!selectedProject) return;
-    if (!title.trim()) return alert('Введите название задачи');
-
-    addTask(selectedProject.id, {
-      id: generateId(),
-      title,
-      description,
-      assignee,
-      status,
-    });
-
-    setTitle('');
-    setDescription('');
-    setAssignee('');
-    setStatus(columns[0]);
+    addTask(selectedProject.id, { id: generateId(), ...payload });
   };
 
   return (
@@ -92,36 +74,7 @@ export default function Projects() {
             </div>
 
             <h3>Создать задачу</h3>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px' }}>
-              <input
-                type="text"
-                placeholder="Название"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                required
-                style={{ marginBottom: '10px', padding: '8px' }}
-              />
-              <textarea
-                placeholder="Описание"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-                rows={3}
-                style={{ marginBottom: '10px', padding: '8px' }}
-              />
-              <input
-                type="text"
-                placeholder="Исполнитель"
-                value={assignee}
-                onChange={e => setAssignee(e.target.value)}
-                style={{ marginBottom: '10px', padding: '8px' }}
-              />
-              <select value={status} onChange={e => setStatus(e.target.value)} style={{ marginBottom: '10px', padding: '8px' }}>
-                {columns.map(col => (
-                  <option key={col} value={col}>{col}</option>
-                ))}
-              </select>
-              <button type="submit" style={{ padding: '10px' }}>Добавить задачу</button>
-            </form>
+            <TaskForm columns={columns} onCreate={handleCreateTask} />
           </div>
         ) : (
           <p>Выберите проект из списка слева</p>
